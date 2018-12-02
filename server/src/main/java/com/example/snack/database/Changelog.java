@@ -1,12 +1,17 @@
 package com.example.snack.database;
 
 import com.example.snack.ingredient.Ingredient;
+import com.example.snack.promotion.Promotion;
+import com.example.snack.promotion.PromotionGeneric;
+import com.example.snack.promotion.PromotionMatch;
+import com.example.snack.promotion.PromotionMultipleIngredient;
 import com.example.snack.snack.Snack;
 import com.example.snack.snack.SnackIngredient;
 import com.github.mongobee.changeset.ChangeLog;
 import com.github.mongobee.changeset.ChangeSet;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -65,5 +70,47 @@ public class Changelog {
                 .map(ingredient -> new SnackIngredient(ingredient, 1))
                 .collect(Collectors.toSet());
         mongoTemplate.save(new Snack("X-Egg Bacon", xEggBaconIngredients));
+    }
+
+    @ChangeSet(order = "003", id = "addPromotions", author = "thamer")
+    public void addPromotions(MongoTemplate mongoTemplate) {
+        List<Ingredient> ingredientList = mongoTemplate.findAll(Ingredient.class);
+
+        // Light
+        Set<Ingredient> hasIngredient = new HashSet<>();
+        Set<Ingredient> hasNoIngredient = new HashSet<>();
+        for (Ingredient ingredient : ingredientList) {
+            if (ingredient.getName().equals("Alface")) {
+                hasIngredient.add(ingredient);
+            }
+            if (ingredient.getName().equals("Bacon")) {
+                hasNoIngredient.add(ingredient);
+            }
+        }
+        Promotion lightPromotion = new PromotionMatch(hasIngredient, hasNoIngredient, 0.1);
+        PromotionGeneric light = new PromotionGeneric("Light", lightPromotion);
+        mongoTemplate.save(light);
+
+        // Muita carne
+        Ingredient meat = null;
+        for (Ingredient ingredient : ingredientList) {
+            if (ingredient.getName().equals("Hambúrguer de carne")) {
+                meat = ingredient;
+            }
+        }
+        Promotion aLotOfMeatPromotion = new PromotionMultipleIngredient(meat, 3, 2);
+        PromotionGeneric aLotOfMeat = new PromotionGeneric("Muita carne", aLotOfMeatPromotion);
+        mongoTemplate.save(aLotOfMeat);
+
+        // Muito queijo
+        Ingredient cheese = null;
+        for (Ingredient ingredient : ingredientList) {
+            if (ingredient.getName().equals("Queijo")) {
+                cheese = ingredient;
+            }
+        }
+        Promotion aLotOfCheesePromotion = new PromotionMultipleIngredient(cheese, 3, 2);
+        PromotionGeneric aLotOfCheese = new PromotionGeneric("Muito queijo", aLotOfCheesePromotion);
+        mongoTemplate.save(aLotOfCheese);
     }
 }

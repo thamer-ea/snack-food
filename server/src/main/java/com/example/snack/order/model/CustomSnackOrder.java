@@ -1,17 +1,18 @@
 package com.example.snack.order.model;
 
+import com.example.snack.snack.SnackIngredient;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 public class CustomSnackOrder {
 
-    private List<IngredientOrder> ingredients;
+    private Set<SnackIngredient> ingredients;
     private Integer quantity;
     private double price;
 
-    public CustomSnackOrder(List<IngredientOrder> ingredients, Integer quantity) {
+    public CustomSnackOrder(Set<SnackIngredient> ingredients, Integer quantity) {
         this.ingredients = ingredients;
         this.quantity = quantity;
     }

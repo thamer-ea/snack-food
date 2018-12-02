@@ -5,7 +5,11 @@ import com.example.snack.exception.MessageException;
 import com.example.snack.ingredient.Ingredient;
 import com.example.snack.ingredient.IngredientService;
 import com.example.snack.order.model.*;
+import com.example.snack.promotion.PromotionGeneric;
+import com.example.snack.promotion.PromotionResult;
+import com.example.snack.promotion.PromotionService;
 import com.example.snack.snack.Snack;
+import com.example.snack.snack.SnackIngredient;
 import com.example.snack.snack.SnackService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class OrderService {
@@ -28,16 +30,18 @@ public class OrderService {
     @Autowired
     private SnackService snackService;
     @Autowired
+    private PromotionService promotionService;
+    @Autowired
     private OrderRepository orderRepository;
 
-    private static void addIngredient(List<IngredientOrder> ingredientOrderList, IngredientOrder ingredientOrder) {
-        for (IngredientOrder io : ingredientOrderList) {
-            if (io.getIngredient().getId().equals(ingredientOrder.getIngredient().getId())) {
-                io.setQuantity(io.getQuantity() + ingredientOrder.getQuantity());
+    private static void addIngredient(Set<SnackIngredient> snackIngredientsSet, SnackIngredient snackIngredient) {
+        for (SnackIngredient si : snackIngredientsSet) {
+            if (si.getIngredient().getId().equals(snackIngredient.getIngredient().getId())) {
+                si.setQuantity(si.getQuantity() + snackIngredient.getQuantity());
                 return;
             }
         }
-        ingredientOrderList.add(ingredientOrder);
+        snackIngredientsSet.add(snackIngredient);
     }
 
     public Page<Order> getAllOrders(Pageable pageable) {
@@ -48,7 +52,7 @@ public class OrderService {
         Order order = new Order();
         order.setCustomer(orderData.getCustomer());
 
-        List<SnackOrder> snackOrderList = new ArrayList();
+        List<SnackOrder> snackOrderList = new ArrayList<>();
         orderData.getSnacks().forEach(snackOrderData -> {
             Optional<Snack> snack = snackService.getSnack(snackOrderData.getId());
             if (snack.isPresent()) {
@@ -61,26 +65,71 @@ public class OrderService {
             order.setSnacks(snackOrderList);
         }
 
-        List<CustomSnackOrder> customSnackOrderList = new ArrayList();
+        List<CustomSnackOrder> customSnackOrderList = new ArrayList<>();
         orderData.getCustomSnacks().forEach(customSnackOrderData -> {
-            List<IngredientOrder> ingredientOrderList = new ArrayList();
+            Set<SnackIngredient> ingredientOrderSet = new HashSet<>();
             customSnackOrderData.getIngredients().forEach(ingredientOrderData -> {
                 Optional<Ingredient> ingredient = ingredientService.getIngredient(ingredientOrderData.getId());
                 if (ingredient.isPresent()) {
-                    addIngredient(ingredientOrderList, new IngredientOrder(ingredient.get(), ingredientOrderData.getQuantity()));
+                    addIngredient(ingredientOrderSet, new SnackIngredient(ingredient.get(), ingredientOrderData.getQuantity()));
                 } else {
                     throw new MessageException("Ingredient " + ingredientOrderData.getId() + " not found.", HttpStatus.BAD_REQUEST);
                 }
             });
-            customSnackOrderList.add(new CustomSnackOrder(ingredientOrderList, customSnackOrderData.getQuantity()));
+            customSnackOrderList.add(new CustomSnackOrder(ingredientOrderSet, customSnackOrderData.getQuantity()));
         });
         if (!customSnackOrderList.isEmpty()) {
             order.setCustomSnacks(customSnackOrderList);
         }
 
-        //TODO calculate price
+        calculatePromotions(order);
+        calculateFinalPrice(order);
         return orderRepository.save(order);
+
+
     }
 
+    private void calculateFinalPrice(Order order) {
+        double finalPrice = 0;
+        for (SnackOrder snackOrder : order.getSnacks()) {
+            finalPrice += (snackOrder.getPrice() * snackOrder.getQuantity());
+        }
+        for (CustomSnackOrder customSnackOrder : order.getCustomSnacks()) {
+            finalPrice += (customSnackOrder.getPrice() * customSnackOrder.getQuantity());
+        }
+        order.setTotalPrice(finalPrice);
+    }
 
+    private void calculatePromotions(Order order) {
+        List<PromotionGeneric> promotions = promotionService.getAllPromotion();
+        for (SnackOrder snackOrder : order.getSnacks()) {
+            PromotionResult pResult = null;
+            for (PromotionGeneric pg : promotions) {
+                pResult = pg.getPromotion().calculatePrice(snackOrder.getSnack().getIngredients());
+                if (pResult.isCompatible()) {
+                    break;
+                }
+            }
+            if (pResult != null && pResult.isCompatible()) {
+                snackOrder.setPrice(pResult.getPrice());
+            } else {
+                snackOrder.setPrice(snackOrder.getSnack().getIngredients().stream().mapToDouble(si -> si.getQuantity() * si.getIngredient().getPrice()).sum());
+            }
+        }
+
+        for (CustomSnackOrder customSnackOrder : order.getCustomSnacks()) {
+            PromotionResult pResult = null;
+            for (PromotionGeneric pg : promotions) {
+                pResult = pg.getPromotion().calculatePrice(customSnackOrder.getIngredients());
+                if (pResult.isCompatible()) {
+                    break;
+                }
+            }
+            if (pResult != null && pResult.isCompatible()) {
+                customSnackOrder.setPrice(pResult.getPrice());
+            } else {
+                customSnackOrder.setPrice(customSnackOrder.getIngredients().stream().mapToDouble(si -> si.getQuantity() * si.getIngredient().getPrice()).sum());
+            }
+        }
+    }
 }

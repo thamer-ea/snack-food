@@ -1,7 +1,9 @@
 package com.example.snack.snack;
 
 import com.example.snack.ingredient.Ingredient;
+import lombok.Data;
 
+@Data
 public class SnackIngredient {
 
     private Ingredient ingredient;
@@ -18,11 +20,4 @@ public class SnackIngredient {
         this.quantity = quantity;
     }
 
-    public Ingredient getIngredient() {
-        return ingredient;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
 }
