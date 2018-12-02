@@ -2,11 +2,13 @@ package com.example.snack.database;
 
 import com.example.snack.ingredient.Ingredient;
 import com.example.snack.snack.Snack;
+import com.example.snack.snack.SnackIngredient;
 import com.github.mongobee.changeset.ChangeLog;
 import com.github.mongobee.changeset.ChangeSet;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -37,27 +39,31 @@ public class Changelog {
         List<Ingredient> ingredientList = mongoTemplate.findAll(Ingredient.class);
 
         final List<String> xBaconIngredientsNames = asList("Bacon", "Hambúrguer de carne", "Queijo");
-        List<Ingredient> xBaconIngredients = ingredientList.stream()
-                .filter(e -> (xBaconIngredientsNames.contains(e.getName())))
-                .collect(Collectors.toList());
+        Set<SnackIngredient> xBaconIngredients = ingredientList.stream()
+                .filter(ingredient -> (xBaconIngredientsNames.contains(ingredient.getName())))
+                .map(ingredient -> new SnackIngredient(ingredient, 1))
+                .collect(Collectors.toSet());
         mongoTemplate.save(new Snack("X-Bacon", xBaconIngredients));
 
         final List<String> xBurgerIngredientsNames = asList("Hambúrguer de carne", "Queijo");
-        List<Ingredient> xBurgerIngredients = ingredientList.stream()
-                .filter(e -> (xBaconIngredientsNames.contains(e.getName())))
-                .collect(Collectors.toList());
+        Set<SnackIngredient>  xBurgerIngredients = ingredientList.stream()
+                .filter(ingredient -> (xBurgerIngredientsNames.contains(ingredient.getName())))
+                .map(ingredient -> new SnackIngredient(ingredient, 1))
+                .collect(Collectors.toSet());
         mongoTemplate.save(new Snack("X-Burger", xBurgerIngredients));
 
         final List<String> xEggIngredientsNames = asList("Ovo", "Hambúrguer de carne", "Queijo");
-        List<Ingredient> xEggIngredients = ingredientList.stream()
-                .filter(e -> (xEggIngredientsNames.contains(e.getName())))
-                .collect(Collectors.toList());
+        Set<SnackIngredient>  xEggIngredients = ingredientList.stream()
+                .filter(ingredient -> (xEggIngredientsNames.contains(ingredient.getName())))
+                .map(ingredient -> new SnackIngredient(ingredient, 1))
+                .collect(Collectors.toSet());
         mongoTemplate.save(new Snack("X-Egg", xEggIngredients));
 
         final List<String> xEggBaconIngredientsNames = asList("Ovo", "Bacon", "Hambúrguer de carne", "Queijo");
-        List<Ingredient> xEggBaconIngredients = ingredientList.stream()
-                .filter(e -> (xEggBaconIngredientsNames.contains(e.getName())))
-                .collect(Collectors.toList());
+        Set<SnackIngredient>  xEggBaconIngredients = ingredientList.stream()
+                .filter(ingredient -> (xEggBaconIngredientsNames.contains(ingredient.getName())))
+                .map(ingredient -> new SnackIngredient(ingredient, 1))
+                .collect(Collectors.toSet());
         mongoTemplate.save(new Snack("X-Egg Bacon", xEggBaconIngredients));
     }
 }
