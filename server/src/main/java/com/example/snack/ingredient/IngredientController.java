@@ -17,7 +17,7 @@ public class IngredientController {
     @Autowired
     private IngredientService ingredientService;
 
-    @GetMapping(value = "/ingredient", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/ingredients", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getAllIngredients(@PageableDefault(size = 1000) Pageable pageable) {
         Page<Ingredient> ingredients = ingredientService.getAllIngredients(pageable);
         if (ingredients.hasContent()) {
