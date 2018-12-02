@@ -1,4 +1,4 @@
-package com.example.snack.ingredients;
+package com.example.snack.ingredient;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

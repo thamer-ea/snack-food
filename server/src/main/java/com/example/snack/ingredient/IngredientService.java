@@ -1,4 +1,4 @@
-package com.example.snack.ingredients;
+package com.example.snack.ingredient;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

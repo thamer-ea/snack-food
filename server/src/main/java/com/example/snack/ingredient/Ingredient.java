@@ -1,4 +1,4 @@
-package com.example.snack.ingredients;
+package com.example.snack.ingredient;
 
 import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 import lombok.Data;

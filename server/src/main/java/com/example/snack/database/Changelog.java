@@ -1,6 +1,6 @@
 package com.example.snack.database;
 
-import com.example.snack.ingredients.Ingredient;
+import com.example.snack.ingredient.Ingredient;
 import com.github.mongobee.changeset.ChangeLog;
 import com.github.mongobee.changeset.ChangeSet;
 import org.springframework.data.mongodb.core.MongoTemplate;
