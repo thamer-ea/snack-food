@@ -10,7 +10,7 @@
  * All rights reserved.
  */
 
-package com.example.snack.Config;
+package com.example.snack.config;
 
 import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE;
 
