@@ -46,21 +46,21 @@ public class Changelog {
         mongoTemplate.save(new Snack("X-Bacon", xBaconIngredients));
 
         final List<String> xBurgerIngredientsNames = asList("Hambúrguer de carne", "Queijo");
-        Set<SnackIngredient>  xBurgerIngredients = ingredientList.stream()
+        Set<SnackIngredient> xBurgerIngredients = ingredientList.stream()
                 .filter(ingredient -> (xBurgerIngredientsNames.contains(ingredient.getName())))
                 .map(ingredient -> new SnackIngredient(ingredient, 1))
                 .collect(Collectors.toSet());
         mongoTemplate.save(new Snack("X-Burger", xBurgerIngredients));
 
         final List<String> xEggIngredientsNames = asList("Ovo", "Hambúrguer de carne", "Queijo");
-        Set<SnackIngredient>  xEggIngredients = ingredientList.stream()
+        Set<SnackIngredient> xEggIngredients = ingredientList.stream()
                 .filter(ingredient -> (xEggIngredientsNames.contains(ingredient.getName())))
                 .map(ingredient -> new SnackIngredient(ingredient, 1))
                 .collect(Collectors.toSet());
         mongoTemplate.save(new Snack("X-Egg", xEggIngredients));
 
         final List<String> xEggBaconIngredientsNames = asList("Ovo", "Bacon", "Hambúrguer de carne", "Queijo");
-        Set<SnackIngredient>  xEggBaconIngredients = ingredientList.stream()
+        Set<SnackIngredient> xEggBaconIngredients = ingredientList.stream()
                 .filter(ingredient -> (xEggBaconIngredientsNames.contains(ingredient.getName())))
                 .map(ingredient -> new SnackIngredient(ingredient, 1))
                 .collect(Collectors.toSet());
