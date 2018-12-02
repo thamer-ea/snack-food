@@ -1,22 +1,17 @@
 package com.example.snack.order.model;
 
+import com.example.snack.snack.Snack;
 import lombok.Data;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 
 @Data
 public class SnackOrder {
 
-    @NotEmpty(message = "Snack ID is required.")
-    private String id;
-    @Positive(message = "Snack quantity must be greater than 0.")
-    @NotNull(message = "Snack quantity is required.")
+    private Snack snack;
     private Integer quantity;
+    private double price;
 
-    public SnackOrder(String id, Integer quantity) {
-        this.id = id;
+    public SnackOrder(Snack snack, Integer quantity) {
+        this.snack = snack;
         this.quantity = quantity;
     }
 }

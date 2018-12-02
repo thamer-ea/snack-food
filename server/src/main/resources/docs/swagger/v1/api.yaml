@@ -43,6 +43,79 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseError"
+  /orders:
+    get:
+      summary: Retrieve all orders
+      tags:
+      - Orders
+      parameters:
+      - in: query
+        name: size
+        schema:
+          type: integer
+          default: 1000
+        description: The number of orders to return.
+        required: false
+      - in: query
+        name: page
+        schema:
+          type: integer
+          default: 0
+        description: Offset.
+        required: false
+      responses:
+        200:
+          description: The Order list.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+        204:
+          description: No content.
+        500:
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+    post:
+      summary: Create an order
+      tags:
+      - Orders
+      requestBody:
+        description: Order to be created.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewOrder"
+      responses:
+        200:
+          description: The Order list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        400:
+          description: Bad request. Missing required field or invalid value.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+        404:
+          description: Snack or ingredient not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
+        500:
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseError"
   /snacks:
     get:
       summary: Retrieve all snacks
@@ -92,6 +165,95 @@ components:
         price:
           type: number
           description: Price of the ingredient.
+    Order:
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The Order unique identification.
+        customer:
+          type: string
+          description: Name of the customer.
+        snacks:
+          type: array
+          description: The list of snacks.
+          items:
+            type: object
+            properties:
+              snack:
+                $ref: '#/components/schemas/Snack'
+              quantity:
+                type: number
+                description: The quantity of the snack.
+              price:
+                type: number
+                description: The snack price.
+        customSnacks:
+          type: array
+          description: The list of custom snacks.
+          items:
+            type: object
+            properties:
+              ingredients:
+                type: array
+                description: The ingredients of the custom snack
+                items:
+                  type: object
+                  properties:
+                    ingredient:
+                      $ref: '#/components/schemas/Ingredient'
+                    quantity:
+                      type: number
+                      description: The quantity of the ingredient.
+              quantity:
+                type: number
+                description: The quantity of the custom snack.
+              price:
+                type: number
+                description: The custom snack price.
+        totalPrice:
+          type: number
+          description: The order price.
+    NewOrder:
+      properties:
+        customer:
+          type: string
+          description: Name of the customer.
+        snacks:
+          type: array
+          description: The list of snacks IDs.
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: The snack ID.
+              quantity:
+                type: number
+                description: The quantity of the snack.
+        customSnacks:
+          type: array
+          description: The list of custom snacks.
+          items:
+            type: object
+            properties:
+              ingredients:
+                type: array
+                description: The ingredients of the custom snack
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      description: The ingredient ID.
+                    quantity:
+                      type: number
+                      description: The quantity of the ingredient.
+              quantity:
+                type: number
+                description: The quantity of the snack.
     Snack:
       properties:
         id:
@@ -103,11 +265,21 @@ components:
           description: Name of the snack.
         ingredients:
           type: array
-          description: The list of ingredients that make up the snack.
+          description: The ingredients of the snack
           items:
-            $ref: '#/components/schemas/Ingredient'
+            type: object
+            properties:
+              ingredient:
+                $ref: '#/components/schemas/Ingredient'
+              quantity:
+                type: number
+                description: The quantity of the ingredient.
+        price:
+          type: number
+          description: The snack price.
     ResponseError:
       properties:
         message:
           type: string
           description: Message that describes an error event.
+

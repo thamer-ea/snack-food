@@ -13,8 +13,8 @@ public class OrderData {
     String customer;
 
     @Valid
-    List<SnackOrder> snacks;
+    List<SnackOrderData> snacks;
 
     @Valid
-    List<CustomSnackOrder> customSnacks;
+    List<CustomSnackOrderData> customSnacks;
 }
