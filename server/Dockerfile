@@ -6,7 +6,7 @@ COPY src src/
 COPY pom.xml ./
 COPY m2 m2/
 
-RUN mvn -s m2/settings.xml clean package
+RUN mvn -s m2/settings.xml clean package -DskipTests
 
 FROM openjdk:8-jre-alpine AS release
 
