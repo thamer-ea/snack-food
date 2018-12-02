@@ -20,9 +20,9 @@ public class IngredientController {
     @GetMapping(value = "/ingredient", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getAllIngredients(@PageableDefault(size = 1000) Pageable pageable) {
         Page<Ingredient> ingredients = ingredientService.getAllIngredients(pageable);
-        if (!ingredients.hasContent()) {
-            return ResponseEntity.noContent().build();
+        if (ingredients.hasContent()) {
+            return ResponseEntity.ok(ingredients.getContent());
         }
-        return ResponseEntity.ok(ingredients.getContent());
+        return ResponseEntity.noContent().build();
     }
 }
