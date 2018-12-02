@@ -4,6 +4,7 @@ server/target/
 
 # Log file
 *.log
+server/logs/
 
 # BlueJ files
 *.ctxt
