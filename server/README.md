@@ -36,5 +36,5 @@ The build stage generates a `jar` file that can be executed using `java -jar` co
 ```
 $ cd snack-food/server
 $ docker build -t snack-food-server .
-$ docker run --rm -d -p 8080:8080 --name snack_food -e SNACK_MONGODB_URI="mongodb://localhost:27017/snack_food" snack-food
+$ docker run --rm -d -p 8080:8080 --name snack_food -e SNACK_MONGODB_URI="mongodb://localhost:27017/snack_food" snack-food-server
 ```
