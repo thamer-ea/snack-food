@@ -34,6 +34,13 @@ public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
 
+    public OrderService(IngredientService ingredientService, SnackService snackService, PromotionService promotionService, OrderRepository orderRepository) {
+        this.ingredientService = ingredientService;
+        this.snackService = snackService;
+        this.promotionService = promotionService;
+        this.orderRepository = orderRepository;
+    }
+
     private static void addIngredient(Set<SnackIngredient> snackIngredientsSet, SnackIngredient snackIngredient) {
         for (SnackIngredient si : snackIngredientsSet) {
             if (si.getIngredient().getId().equals(snackIngredient.getIngredient().getId())) {
@@ -91,11 +98,15 @@ public class OrderService {
 
     private void calculateFinalPrice(Order order) {
         double finalPrice = 0;
-        for (SnackOrder snackOrder : order.getSnacks()) {
-            finalPrice += (snackOrder.getPrice() * snackOrder.getQuantity());
+        if (order.getSnacks() != null) {
+            for (SnackOrder snackOrder : order.getSnacks()) {
+                finalPrice += (snackOrder.getPrice() * snackOrder.getQuantity());
+            }
         }
-        for (CustomSnackOrder customSnackOrder : order.getCustomSnacks()) {
-            finalPrice += (customSnackOrder.getPrice() * customSnackOrder.getQuantity());
+        if (order.getCustomSnacks() != null) {
+            for (CustomSnackOrder customSnackOrder : order.getCustomSnacks()) {
+                finalPrice += (customSnackOrder.getPrice() * customSnackOrder.getQuantity());
+            }
         }
         order.setTotalPrice(finalPrice);
     }
