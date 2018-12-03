@@ -1,0 +1,26 @@
+version: '2'
+
+services:
+  # mongodb
+  mongodb:
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    volumes:
+      - /opt/snack/mongodb:/data/db      
+
+  # backend
+  server:
+    build:
+      context: server
+      dockerfile: Dockerfile
+    image: server
+    container_name: server
+    ports:
+      - 8080:8080
+    links:
+      - mongodb
+    depends_on:
+      - mongodb
+    environment:
+      SNACK_MONGODB_URI: mongodb://mongodb/snack_food
