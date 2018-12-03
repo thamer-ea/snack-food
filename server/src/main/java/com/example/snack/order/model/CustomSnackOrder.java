@@ -16,4 +16,10 @@ public class CustomSnackOrder {
         this.ingredients = ingredients;
         this.quantity = quantity;
     }
+
+    public CustomSnackOrder(Set<SnackIngredient> ingredients, Integer quantity, double price) {
+        this.ingredients = ingredients;
+        this.quantity = quantity;
+        this.price = price;
+    }
 }

@@ -14,4 +14,10 @@ public class SnackOrder {
         this.snack = snack;
         this.quantity = quantity;
     }
+
+    public SnackOrder(Snack snack, Integer quantity, double price) {
+        this.snack = snack;
+        this.quantity = quantity;
+        this.price = price;
+    }
 }
